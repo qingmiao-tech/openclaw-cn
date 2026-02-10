@@ -345,6 +345,20 @@ export const feishuPlugin: ChannelPlugin<ResolvedFeishuAccount> = {
       const account = resolveFeishuAccount({ cfg: ctx.cfg, accountId: ctx.accountId });
       const port = account.config?.webhookPort ?? null;
       ctx.setStatus({ accountId: ctx.accountId, port });
+
+      // Warm probe cache on gateway startup (force=true to get fresh state)
+      ctx.log?.info(`probing feishu[${ctx.accountId}] on startup to warm cache…`);
+      const probeResult = await probeFeishu(account, { force: true });
+      if (probeResult.ok) {
+        ctx.log?.info(
+          `feishu[${ctx.accountId}] probe ok: bot=${probeResult.botName ?? "unknown"}`,
+        );
+      } else {
+        ctx.log?.warn(
+          `feishu[${ctx.accountId}] probe failed: ${probeResult.error ?? "unknown error"}`,
+        );
+      }
+
       ctx.log?.info(
         `starting feishu[${ctx.accountId}] (mode: ${account.config?.connectionMode ?? "websocket"})`,
       );
