@@ -79,6 +79,7 @@ import {
 import { resolveInjectedAssistantIdentity } from "./assistant-identity.ts";
 import { loadAssistantIdentity as loadAssistantIdentityInternal } from "./controllers/assistant-identity.ts";
 import { loadSettings, type UiSettings } from "./storage.ts";
+import { setLocale } from "./i18n.ts";
 import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
 
 declare global {
@@ -350,6 +351,7 @@ export class OpenClawApp extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    setLocale(this.settings.locale ?? "en");
     handleConnected(this as unknown as Parameters<typeof handleConnected>[0]);
   }
 
